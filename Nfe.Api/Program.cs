@@ -1,7 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using Nfe.Infrastructure.Data;
+using Nfe.Domain.Contracts.Repositories;
+using Nfe.Infrastructure.Repositories;
+
 
 var builder = WebApplication.CreateBuilder(args);
+
 
 // Add services to the container.
 
@@ -12,6 +16,15 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<NfeDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<IClienteRepository, ClienteRepository>();
+builder.Services.AddScoped<INfeRepository, NfeRepository>();
+
+builder.Services.AddMediatR(cfg => {
+    cfg.RegisterServicesFromAssembly(typeof(Nfe.Application.Features.Clientes.Command.Create.CreateClienteHandler).Assembly);
+    cfg.RegisterServicesFromAssembly(typeof(Nfe.Application.Features.NotaFiscal.Query.GetNfeById.GetNfeByIdHandler).Assembly);
+});
+
 
 var app = builder.Build();
 

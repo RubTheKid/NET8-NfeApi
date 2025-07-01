@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Nfe.Domain.Entities;
+using Nfe.Infrastructure.Data.Seed;
 using System.Reflection.Emit;
 
 namespace Nfe.Infrastructure.Data;
@@ -21,6 +22,7 @@ public class NfeDbContext(DbContextOptions<NfeDbContext> options) : DbContext(op
             entity.Property(e => e.InscricaoEstadual).HasMaxLength(20);
             entity.Property(e => e.Email).HasMaxLength(128);
             entity.Property(e => e.Telefone).HasMaxLength(20);
+
             entity.OwnsOne(e => e.Cnpj, cnpj =>
             {
                 cnpj.Property(c => c.Numero).HasColumnName("Cnpj").HasMaxLength(14);
@@ -99,6 +101,9 @@ public class NfeDbContext(DbContextOptions<NfeDbContext> options) : DbContext(op
                   .WithMany()
                   .HasForeignKey(e => e.ProdutoId);
         });
+
+        DataSeed.SeedData(mb);
+        NotaFiscalSeed.SeedData(mb);
 
         base.OnModelCreating(mb);
     }

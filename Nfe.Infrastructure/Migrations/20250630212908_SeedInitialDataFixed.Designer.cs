@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Nfe.Infrastructure.Data;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Nfe.Infrastructure.Migrations
 {
     [DbContext(typeof(NfeDbContext))]
-    partial class NfeDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250630212908_SeedInitialDataFixed")]
+    partial class SeedInitialDataFixed
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -152,88 +155,6 @@ namespace Nfe.Infrastructure.Migrations
                     b.HasIndex("ProdutoId");
 
                     b.ToTable("ItensNfe");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("a1111111-1111-1111-1111-111111111111"),
-                            Cfop = "5102",
-                            Cst = "00",
-                            NotaFiscalId = new Guid("f1111111-1111-1111-1111-111111111111"),
-                            ProdutoId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
-                            Quantidade = 1.00m,
-                            Sequencia = 1,
-                            ValorCofins = 190.00m,
-                            ValorIcms = 450.00m,
-                            ValorIpi = 125.00m,
-                            ValorPis = 41.25m,
-                            ValorTotal = 2500.00m,
-                            ValorUnitario = 2500.00m
-                        },
-                        new
-                        {
-                            Id = new Guid("b2222222-2222-2222-2222-222222222222"),
-                            Cfop = "5102",
-                            Cst = "00",
-                            NotaFiscalId = new Guid("f1111111-1111-1111-1111-111111111111"),
-                            ProdutoId = new Guid("dddddddd-dddd-dddd-dddd-dddddddddddd"),
-                            Quantidade = 1.00m,
-                            Sequencia = 2,
-                            ValorCofins = 53.20m,
-                            ValorIcms = 126.00m,
-                            ValorIpi = 35.00m,
-                            ValorPis = 11.55m,
-                            ValorTotal = 700.00m,
-                            ValorUnitario = 700.00m
-                        },
-                        new
-                        {
-                            Id = new Guid("c3333333-3333-3333-3333-333333333333"),
-                            Cfop = "5102",
-                            Cst = "00",
-                            NotaFiscalId = new Guid("f2222222-2222-2222-2222-222222222222"),
-                            ProdutoId = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
-                            Quantidade = 1.00m,
-                            Sequencia = 1,
-                            ValorCofins = 26.60m,
-                            ValorIcms = 63.00m,
-                            ValorIpi = 17.50m,
-                            ValorPis = 5.78m,
-                            ValorTotal = 350.00m,
-                            ValorUnitario = 350.00m
-                        },
-                        new
-                        {
-                            Id = new Guid("d4444444-4444-4444-4444-444444444444"),
-                            Cfop = "5102",
-                            Cst = "00",
-                            NotaFiscalId = new Guid("f2222222-2222-2222-2222-222222222222"),
-                            ProdutoId = new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"),
-                            Quantidade = 1.00m,
-                            Sequencia = 2,
-                            ValorCofins = 34.20m,
-                            ValorIcms = 81.00m,
-                            ValorIpi = 22.50m,
-                            ValorPis = 7.43m,
-                            ValorTotal = 450.00m,
-                            ValorUnitario = 450.00m
-                        },
-                        new
-                        {
-                            Id = new Guid("e5555555-5555-5555-5555-555555555555"),
-                            Cfop = "5102",
-                            Cst = "00",
-                            NotaFiscalId = new Guid("f2222222-2222-2222-2222-222222222222"),
-                            ProdutoId = new Guid("eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee"),
-                            Quantidade = 1.00m,
-                            Sequencia = 3,
-                            ValorCofins = 2.66m,
-                            ValorIcms = 6.30m,
-                            ValorIpi = 1.75m,
-                            ValorPis = 0.58m,
-                            ValorTotal = 35.00m,
-                            ValorUnitario = 35.00m
-                        });
                 });
 
             modelBuilder.Entity("Nfe.Domain.Entities.NotaFiscal", b =>
@@ -313,45 +234,6 @@ namespace Nfe.Infrastructure.Migrations
                     b.HasIndex("EmitenteId");
 
                     b.ToTable("NotasFiscais");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("f1111111-1111-1111-1111-111111111111"),
-                            ChaveAcesso = "35240112345678000123550010000000011234567890",
-                            DataAutorizacao = new DateTime(2024, 1, 15, 10, 31, 0, 0, DateTimeKind.Utc),
-                            DataCriacao = new DateTime(2024, 1, 15, 10, 30, 0, 0, DateTimeKind.Utc),
-                            DataEmissao = new DateTime(2024, 1, 15, 10, 30, 0, 0, DateTimeKind.Utc),
-                            DestinatarioId = new Guid("22222222-2222-2222-2222-222222222222"),
-                            EmitenteId = new Guid("11111111-1111-1111-1111-111111111111"),
-                            NumeroNota = "000000001",
-                            ProtocoloAutorizacao = "135240000012345",
-                            Serie = "1",
-                            Status = 2,
-                            ValorCofins = 243.20m,
-                            ValorIcms = 576.00m,
-                            ValorIpi = 160.00m,
-                            ValorPis = 52.80m,
-                            ValorTotal = 3200.00m,
-                            XmlNFe = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><nfeProc versao=\"4.00\"><NFe><infNFe Id=\"NFe35240112345678000123550010000000011234567890\"></infNFe></NFe></nfeProc>"
-                        },
-                        new
-                        {
-                            Id = new Guid("f2222222-2222-2222-2222-222222222222"),
-                            ChaveAcesso = "35240112345678000123550010000000021234567890",
-                            DataCriacao = new DateTime(2024, 1, 16, 14, 45, 0, 0, DateTimeKind.Utc),
-                            DataEmissao = new DateTime(2024, 1, 16, 14, 45, 0, 0, DateTimeKind.Utc),
-                            DestinatarioId = new Guid("33333333-3333-3333-3333-333333333333"),
-                            EmitenteId = new Guid("11111111-1111-1111-1111-111111111111"),
-                            NumeroNota = "000000002",
-                            Serie = "1",
-                            Status = 1,
-                            ValorCofins = 63.46m,
-                            ValorIcms = 150.30m,
-                            ValorIpi = 41.75m,
-                            ValorPis = 13.78m,
-                            ValorTotal = 835.00m
-                        });
                 });
 
             modelBuilder.Entity("Nfe.Domain.Entities.Produto", b =>
