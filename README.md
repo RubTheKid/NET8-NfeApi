@@ -22,7 +22,7 @@
 
 ### 1. Clonar o repositório
 ```bash
-git clone <repository-url>
+git clone https://github.com/RubTheKid/Nfe.Solution.git
 cd Nfe.Solution
 ```
 
