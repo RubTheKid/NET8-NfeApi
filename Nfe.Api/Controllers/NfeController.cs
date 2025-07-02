@@ -61,8 +61,8 @@ public class NfeController : ControllerBase
         }
     }
 
-    [HttpPost("send-to-authorization")]
-    public async Task<ActionResult<SendNfeToAuthorizationResponse>> SendToAuthorization([FromBody] SendNfeToAuthorizationRequest request)
+    [HttpPost("nfe")]
+    public async Task<ActionResult<SendNfeToAuthorizationResponse>> EnviarSefaz([FromBody] SendNfeToAuthorizationRequest request)
     {
         try
         {
