@@ -1,6 +1,7 @@
 using MediatR;
 using Nfe.Application.Services;
 using Nfe.Domain.Contracts.Repositories;
+using Nfe.Domain.Messages;
 using DomainEntity = Nfe.Domain.Entities;
 
 namespace Nfe.Application.Features.NotaFiscal.Command.SendNfeToAuthorization;
@@ -28,7 +29,6 @@ public class SendNfeToAuthorizationHandler : IRequestHandler<SendNfeToAuthorizat
     {
         try
         {
-            // Validações básicas
             if (string.IsNullOrWhiteSpace(request.NumeroNota))
             {
                 return new SendNfeToAuthorizationResponse
@@ -56,7 +56,6 @@ public class SendNfeToAuthorizationHandler : IRequestHandler<SendNfeToAuthorizat
                 };
             }
 
-            // Validar se emitente e destinatário existem
             var emitente = await _clienteRepository.GetById(request.EmitenteId);
             if (emitente == null)
             {

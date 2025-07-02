@@ -1,4 +1,6 @@
-﻿namespace Nfe.Application.Services;
+﻿using Nfe.Domain.Messages;
+
+namespace Nfe.Application.Services;
 
 public interface IMessageService
 {

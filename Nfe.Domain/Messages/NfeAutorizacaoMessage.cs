@@ -1,4 +1,4 @@
-﻿namespace Nfe.Application.Services;
+﻿namespace Nfe.Domain.Messages;
 
 public sealed record NfeAutorizacaoMessage
 {

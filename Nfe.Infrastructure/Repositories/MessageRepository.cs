@@ -1,4 +1,5 @@
-﻿using RabbitMQ.Client;
+﻿using Nfe.Domain.Messages;
+using RabbitMQ.Client;
 using System.Text;
 using System.Text.Json;
 
