@@ -33,4 +33,4 @@ public class NfeRepository : BaseRepository<NotaFiscal>, INfeRepository
         await _context.SaveChangesAsync();
         return entity;
     }
-} 
+}

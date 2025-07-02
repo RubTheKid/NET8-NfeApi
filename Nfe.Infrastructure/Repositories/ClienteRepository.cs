@@ -1,9 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Nfe.Domain.Contracts.Repositories;
 using Nfe.Domain.Entities;
 using Nfe.Infrastructure.Data;
-using Nfe.Domain.Contracts.Repositories;
-using System.Globalization;
-using System.Text;
 
 namespace Nfe.Infrastructure.Repositories;
 

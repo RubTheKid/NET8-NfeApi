@@ -45,7 +45,7 @@ public class ItemNfe
     private void CalcularImpostos()
     {
         // simulacao do calculo do imposto
-        ValorIcms = ValorTotal * 0.18m; 
+        ValorIcms = ValorTotal * 0.18m;
         ValorIpi = ValorTotal * 0.05m;
         ValorPis = ValorTotal * 0.0165m;
         ValorCofins = ValorTotal * 0.076m;

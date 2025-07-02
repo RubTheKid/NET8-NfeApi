@@ -49,4 +49,4 @@ public class GetNfeByIdHandler : IRequestHandler<GetNfeByIdRequest, GetNfeByIdRe
             }
         };
     }
-} 
+}

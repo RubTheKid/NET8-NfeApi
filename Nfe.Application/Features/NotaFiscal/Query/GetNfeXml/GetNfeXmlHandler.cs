@@ -37,4 +37,4 @@ public class GetNfeXmlHandler : IRequestHandler<GetNfeXmlRequest, GetNfeXmlRespo
             Message = null
         };
     }
-} 
+}

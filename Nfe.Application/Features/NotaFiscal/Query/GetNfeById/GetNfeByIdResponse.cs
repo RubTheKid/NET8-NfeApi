@@ -32,4 +32,4 @@ public class Destinatario
     public Guid Id { get; set; }
     public string RazaoSocial { get; set; } = null!;
     public string Cnpj { get; set; } = null!;
-} 
+}

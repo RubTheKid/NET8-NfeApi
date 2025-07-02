@@ -23,7 +23,7 @@ public class NfeController : ControllerBase
         {
             var query = new GetNfeByIdRequest(id);
             var result = await _mediator.Send(query);
-            
+
             if (result == null)
                 return NotFound(new { error = "Nota Fiscal não encontrada" });
 
@@ -42,7 +42,7 @@ public class NfeController : ControllerBase
         {
             var query = new GetNfeXmlRequest(id);
             var result = await _mediator.Send(query);
-            
+
             if (result == null)
                 return NotFound(new { error = "Nota Fiscal não encontrada" });
 
@@ -56,4 +56,4 @@ public class NfeController : ControllerBase
             return StatusCode(500, new { error = "Erro interno do servidor", details = ex.Message });
         }
     }
-} 
+}

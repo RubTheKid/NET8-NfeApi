@@ -1,11 +1,11 @@
 ﻿using Moq;
-using Nfe.Application.Features.Clientes.Command.Create.Request;
 using Nfe.Application.Features.Clientes.Command.Create;
+using Nfe.Application.Features.Clientes.Command.Create.Request;
+using Nfe.Application.Features.Clientes.Command.Update;
 using Nfe.Application.Features.Clientes.Query.GetClienteById;
 using Nfe.Domain.Contracts.Repositories;
 using Nfe.Domain.Entities;
 using Nfe.Domain.ValueObjects;
-using Nfe.Application.Features.Clientes.Command.Update;
 
 namespace Nfe.Tests.HandlerTests;
 
@@ -17,7 +17,7 @@ public class ClienteHandlersTests
     {
         // Arrange
         var clienteId = Guid.NewGuid();
-        var cliente = new Cliente("Empresa", "Fantasia", new Cnpj("12345678000111"), "IE", 
+        var cliente = new Cliente("Empresa", "Fantasia", new Cnpj("12345678000111"), "IE",
             new Endereco("Rua", "1", null, "Bairro", "Cidade", "SP", "01010101", "Brasil"), "a@a.com", "11999999999");
         typeof(Cliente).GetProperty("Id")?.SetValue(cliente, clienteId);
 

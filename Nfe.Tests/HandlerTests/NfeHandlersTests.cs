@@ -97,7 +97,7 @@ public class NfeHandlersTests
         // Arrange
         var nfeId = Guid.NewGuid();
         var xmlContent = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><nfeProc>...</nfeProc>";
-        
+
         var nfe = new NotaFiscal("000000001", "1", Guid.NewGuid(), Guid.NewGuid());
         SetPrivateProperty(nfe, "Id", nfeId);
         SetPrivateProperty(nfe, "Status", StatusNFe.Autorizada);
@@ -123,7 +123,7 @@ public class NfeHandlersTests
     {
         // Arrange
         var nfeId = Guid.NewGuid();
-        
+
         var nfe = new NotaFiscal("000000001", "1", Guid.NewGuid(), Guid.NewGuid());
         SetPrivateProperty(nfe, "Id", nfeId);
         SetPrivateProperty(nfe, "Status", StatusNFe.EmProcessamento);
@@ -148,7 +148,7 @@ public class NfeHandlersTests
     {
         // Arrange
         var nfeId = Guid.NewGuid();
-        
+
         var nfe = new NotaFiscal("000000001", "1", Guid.NewGuid(), Guid.NewGuid());
         SetPrivateProperty(nfe, "Id", nfeId);
         SetPrivateProperty(nfe, "Status", StatusNFe.Rejeitada);
@@ -192,19 +192,19 @@ public class NfeHandlersTests
     private static Cliente CreateClienteMock(Guid id, string razaoSocial, string cnpj)
     {
         var endereco = new Endereco("Rua Teste", "123", null, "Centro", "São Paulo", "SP", "01010101", "Brasil");
-        var cliente = new Cliente(razaoSocial, "Nome Fantasia", new Cnpj(cnpj), "123456789", 
+        var cliente = new Cliente(razaoSocial, "Nome Fantasia", new Cnpj(cnpj), "123456789",
             endereco, "teste@teste.com", "11999999999");
-        
+
         SetPrivateProperty(cliente, "Id", id);
         return cliente;
     }
 
     private static void SetPrivateProperty(object obj, string propertyName, object value)
     {
-        var property = obj.GetType().GetProperty(propertyName, 
+        var property = obj.GetType().GetProperty(propertyName,
             System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
         property?.SetValue(obj, value);
     }
 
     #endregion
-} 
+}

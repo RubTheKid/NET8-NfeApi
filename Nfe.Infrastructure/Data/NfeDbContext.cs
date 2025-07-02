@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Nfe.Domain.Entities;
 using Nfe.Infrastructure.Data.Seed;
-using System.Reflection.Emit;
 
 namespace Nfe.Infrastructure.Data;
 

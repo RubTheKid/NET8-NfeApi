@@ -1,6 +1,5 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Nfe.Application.Features.Clientes.Command.Create;
 using Nfe.Application.Features.Clientes.Command.Create.Request;
 using Nfe.Application.Features.Clientes.Command.Update;
 using Nfe.Application.Features.Clientes.Query.GetAllClientes;
@@ -44,7 +43,7 @@ public class ClientesController : ControllerBase
         {
             var query = new GetClienteByIdRequest(id);
             var result = await _mediator.Send(query);
-            
+
             if (result == null)
                 return NotFound(new { error = "Cliente não encontrado" });
 
@@ -92,4 +91,4 @@ public class ClientesController : ControllerBase
             return StatusCode(500, new { error = "Erro interno do servidor", details = ex.Message });
         }
     }
-} 
+}

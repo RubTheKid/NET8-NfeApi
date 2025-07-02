@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Nfe.Infrastructure.Data;
 using Nfe.Domain.Contracts.Repositories;
+using Nfe.Infrastructure.Data;
 
 namespace Nfe.Infrastructure.Repositories;
 

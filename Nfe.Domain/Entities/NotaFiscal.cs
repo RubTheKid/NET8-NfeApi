@@ -1,5 +1,4 @@
 ﻿using Nfe.Domain.ValueObjects;
-using System.Xml;
 
 namespace Nfe.Domain.Entities;
 

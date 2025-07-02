@@ -11,6 +11,6 @@ public sealed record CreateClienteRequest : IRequest<CreateClienteResponse>
     public string Cnpj { get; set; }
     public string? InscricaoEstadual { get; set; }
     public string Email { get; set; }
-    public string Telefone { get; set; } 
+    public string Telefone { get; set; }
     public Endereco Endereco { get; set; }
 }
