@@ -1,7 +1,9 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Nfe.Application.Features.NotaFiscal.Command.SendNfeToAuthorization;
 using Nfe.Application.Features.NotaFiscal.Query.GetNfeById;
 using Nfe.Application.Features.NotaFiscal.Query.GetNfeXml;
+using Nfe.Application.Services;
 
 namespace Nfe.Api.Controllers;
 
@@ -10,10 +12,12 @@ namespace Nfe.Api.Controllers;
 public class NfeController : ControllerBase
 {
     private readonly IMediator _mediator;
+    private readonly IMessageService _messageService;
 
-    public NfeController(IMediator mediator)
+    public NfeController(IMediator mediator, IMessageService messageService)
     {
         _mediator = mediator;
+        _messageService = messageService;
     }
 
     [HttpGet("{id}")]
@@ -56,4 +60,23 @@ public class NfeController : ControllerBase
             return StatusCode(500, new { error = "Erro interno do servidor", details = ex.Message });
         }
     }
+
+    [HttpPost("send-to-authorization")]
+    public async Task<ActionResult<SendNfeToAuthorizationResponse>> SendToAuthorization([FromBody] SendNfeToAuthorizationRequest request)
+    {
+        try
+        {
+            var result = await _mediator.Send(request);
+
+            if (!result.Success)
+                return BadRequest(new { error = result.Message });
+
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = "Erro interno do servidor", details = ex.Message });
+        }
+    }
+
 }

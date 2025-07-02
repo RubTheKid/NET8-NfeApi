@@ -71,15 +71,44 @@ public class NotaFiscal
 
     private void GerarChaveAcesso()
     {
-        // Lógica simplificada para gerar chave de acesso (44 dígitos)
-        var uf = "35"; // SP
-        var aamm = DateTime.Now.ToString("yyMM");
-        var cnpjEmitente = "12345678000123"; // seria obtido do emitente
-        var modelo = "55"; // NF-e
+        // Gerar chave de acesso da NFe (44 dígitos)
+        var uf = "35"; // SP (2 dígitos)
+        var aamm = DateTime.Now.ToString("yyMM"); // Ano e Mês (4 dígitos)
+        var cnpjEmitente = "12345678000123"; // CNPJ do emitente (14 dígitos)
+        var modelo = "55"; // Modelo NFe (2 dígitos)
+        var serie = Serie.PadLeft(3, '0'); // Série (3 dígitos)
+        var numeroNota = NumeroNota.PadLeft(9, '0'); // Número da nota (9 dígitos)
+        var tpEmis = "1"; // Forma de emissão - Normal (1 dígito)
         var random = new Random();
-        var dv = random.Next(0, 9);
+        var codigoNumerico = random.Next(10000000, 99999999).ToString(); // Código numérico (8 dígitos)
 
-        ChaveAcesso = $"{uf}{aamm}{cnpjEmitente}{modelo}{Serie.PadLeft(3, '0')}{NumeroNota.PadLeft(9, '0')}{random.Next(10000000, 99999999)}{dv}";
+        // Chave sem o dígito verificador (43 dígitos)
+        var chaveSemDv = $"{uf}{aamm}{cnpjEmitente}{modelo}{serie}{numeroNota}{tpEmis}{codigoNumerico}";
+
+        // Calcular dígito verificador
+        var dv = CalcularDigitoVerificador(chaveSemDv);
+
+        // Chave completa (44 dígitos)
+        ChaveAcesso = $"{chaveSemDv}{dv}";
+    }
+
+    private static int CalcularDigitoVerificador(string chave)
+    {
+        // Algoritmo simplificado para calcular o dígito verificador
+        // Em produção, deve-se usar o algoritmo oficial do módulo 11
+        var soma = 0;
+        var multiplicador = 2;
+
+        for (int i = chave.Length - 1; i >= 0; i--)
+        {
+            soma += int.Parse(chave[i].ToString()) * multiplicador;
+            multiplicador++;
+            if (multiplicador > 9)
+                multiplicador = 2;
+        }
+
+        var resto = soma % 11;
+        return resto < 2 ? 0 : 11 - resto;
     }
 
     private void CalcularTotais()

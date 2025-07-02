@@ -1,0 +1,16 @@
+{
+  "numeroNota": "000000001",
+  "serie": "001",
+  "emitenteId": "11111111-1111-1111-1111-111111111111",
+  "destinatarioId": "22222222-2222-2222-2222-222222222222",
+  "itens": [
+    {
+      "produtoId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+      "sequencia": 1,
+      "quantidade": 1.0,
+      "valorUnitario": 2500.00,
+      "cfop": "5102",
+      "cst": "00"
+    }
+  ]
+} 
