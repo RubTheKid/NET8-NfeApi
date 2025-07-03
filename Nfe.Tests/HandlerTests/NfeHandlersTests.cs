@@ -230,7 +230,7 @@ public class NfeHandlersTests
 
         clienteRepoMock.Setup(r => r.GetById(emitenteId)).ReturnsAsync(emitente);
         clienteRepoMock.Setup(r => r.GetById(destinatarioId)).ReturnsAsync(destinatario);
-        
+
         nfeRepoMock.Setup(r => r.Add(It.IsAny<NotaFiscal>()))
             .ReturnsAsync((NotaFiscal nfe) =>
             {
@@ -464,7 +464,7 @@ public class NfeHandlersTests
 
         clienteRepoMock.Setup(r => r.GetById(emitenteId)).ReturnsAsync(emitente);
         clienteRepoMock.Setup(r => r.GetById(destinatarioId)).ReturnsAsync(destinatario);
-        
+
         nfeRepoMock.Setup(r => r.Add(It.IsAny<NotaFiscal>()))
             .ThrowsAsync(new Exception("Erro de banco de dados"));
 

@@ -9,7 +9,7 @@ public class NfeRepository : BaseRepository<NotaFiscal>, INfeRepository
 {
     public NfeRepository(NfeDbContext context) : base(context) { }
 
-    public async Task<NotaFiscal?> GetById(Guid id)
+    public override async Task<NotaFiscal?> GetById(Guid id)
     {
         return await _context.Set<NotaFiscal>()
             .Include(n => n.Emitente)

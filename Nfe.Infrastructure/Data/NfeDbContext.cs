@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Nfe.Auth.Models;
 using Nfe.Domain.Entities;
 using Nfe.Infrastructure.Data.Seed;
 
@@ -10,6 +11,7 @@ public class NfeDbContext(DbContextOptions<NfeDbContext> options) : DbContext(op
     public DbSet<Produto> Produtos { get; set; }
     public DbSet<NotaFiscal> NotasFiscais { get; set; }
     public DbSet<ItemNfe> ItensNfe { get; set; }
+    public DbSet<User> Users { get; set; }
 
     protected override void OnModelCreating(ModelBuilder mb)
     {
@@ -97,8 +99,16 @@ public class NfeDbContext(DbContextOptions<NfeDbContext> options) : DbContext(op
             entity.Property(e => e.Cst).HasMaxLength(3);
 
             entity.HasOne(e => e.Produto)
-                  .WithMany()
-                  .HasForeignKey(e => e.ProdutoId);
+       .WithMany()
+       .HasForeignKey(e => e.ProdutoId);
+        });
+
+        mb.Entity<User>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Email).HasMaxLength(255).IsRequired();
+            entity.Property(e => e.PasswordHash).HasMaxLength(255).IsRequired();
+            entity.HasIndex(e => e.Email).IsUnique();
         });
 
         DataSeed.SeedData(mb);

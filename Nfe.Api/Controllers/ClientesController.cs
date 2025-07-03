@@ -6,7 +6,7 @@ using Nfe.Application.Features.Clientes.Query.GetAllClientes;
 using Nfe.Application.Features.Clientes.Query.GetClienteById;
 
 namespace Nfe.Api.Controllers;
-
+//[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class ClientesController : ControllerBase

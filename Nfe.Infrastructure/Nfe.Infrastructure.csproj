@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Nfe.Application\Nfe.Application.csproj" />
+    <ProjectReference Include="..\Nfe.Auth\Nfe.Auth.csproj" />
     <ProjectReference Include="..\Nfe.Domain\Nfe.Domain.csproj" />
   </ItemGroup>
 

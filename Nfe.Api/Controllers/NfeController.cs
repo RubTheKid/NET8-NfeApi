@@ -6,7 +6,7 @@ using Nfe.Application.Features.NotaFiscal.Query.GetNfeXml;
 using Nfe.Application.Services;
 
 namespace Nfe.Api.Controllers;
-
+//[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class NfeController : ControllerBase
