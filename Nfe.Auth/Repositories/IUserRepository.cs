@@ -1,6 +1,6 @@
 using Nfe.Auth.Models;
 
-namespace Nfe.Auth;
+namespace Nfe.Auth.Repositories;
 
 public interface IUserRepository
 {

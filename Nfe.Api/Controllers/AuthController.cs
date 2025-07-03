@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Nfe.Auth;
 using Nfe.Auth.Models;
+using Nfe.Auth.Services;
 
 namespace Nfe.Api.Controllers;
 

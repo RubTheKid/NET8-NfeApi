@@ -1,11 +1,12 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Nfe.Auth.Models;
+using Nfe.Auth.Repositories;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace Nfe.Auth;
+namespace Nfe.Auth.Services;
 
 public class AuthService : IAuthService
 {

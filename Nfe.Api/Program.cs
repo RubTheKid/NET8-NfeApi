@@ -3,6 +3,8 @@ using Microsoft.OpenApi.Models;
 using Nfe.Application.Services;
 using Nfe.Auth;
 using Nfe.Auth.Models;
+using Nfe.Auth.Repositories;
+using Nfe.Auth.Services;
 using Nfe.Domain.Contracts.Repositories;
 using Nfe.Infrastructure.Data;
 using Nfe.Infrastructure.Repositories;
@@ -12,10 +14,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllers();
 
-// JWT Authentication from Auth library
 builder.Services.AddJwtAuthentication(builder.Configuration);
 
-// Swagger Configuration with JWT
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {

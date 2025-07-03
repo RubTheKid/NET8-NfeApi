@@ -1,7 +1,7 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Nfe.Auth;
+namespace Nfe.Auth.Services;
 
 public class PasswordHashService : IPasswordHashService
 {

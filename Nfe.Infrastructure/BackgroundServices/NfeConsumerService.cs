@@ -45,8 +45,8 @@ public class NfeConsumerService : BackgroundService
         {
             try
             {
-                _logger.LogInformation($"🔄 Tentativa {currentRetry + 1}/{maxRetries} de conexão com RabbitMQ...");
-                
+                _logger.LogInformation($"Tentativa {currentRetry + 1}/{maxRetries} de conexão com RabbitMQ...");
+
                 _connection = factory.CreateConnectionAsync().GetAwaiter().GetResult();
                 _channel = _connection.CreateChannelAsync().GetAwaiter().GetResult();
 
@@ -57,7 +57,7 @@ public class NfeConsumerService : BackgroundService
                     autoDelete: false,
                     arguments: null).GetAwaiter().GetResult();
 
-                _logger.LogInformation("✅ Conexão com RabbitMQ estabelecida com sucesso!");
+                _logger.LogInformation("Conexão com RabbitMQ estabelecida com sucesso!");
                 return;
             }
             catch (Exception ex)
@@ -65,12 +65,12 @@ public class NfeConsumerService : BackgroundService
                 currentRetry++;
                 if (currentRetry >= maxRetries)
                 {
-                    _logger.LogError(ex, "❌ Falha ao conectar com RabbitMQ após {MaxRetries} tentativas", maxRetries);
+                    _logger.LogError(ex, "Falha ao conectar com RabbitMQ após {MaxRetries} tentativas", maxRetries);
                     throw;
                 }
 
-                var delay = TimeSpan.FromSeconds(Math.Pow(2, currentRetry)); // Exponential backoff
-                _logger.LogWarning(ex, "⚠️ Falha na conexão com RabbitMQ. Tentando novamente em {Delay}s...", delay.TotalSeconds);
+                var delay = TimeSpan.FromSeconds(Math.Pow(2, currentRetry));
+                _logger.LogWarning(ex, "Falha na conexão com RabbitMQ. Tentando novamente em {Delay}s...", delay.TotalSeconds);
                 Task.Delay(delay).GetAwaiter().GetResult();
             }
         }
@@ -97,11 +97,11 @@ public class NfeConsumerService : BackgroundService
                 await ProcessarNfeAsync(nfeMessage);
 
                 await _channel.BasicAckAsync(ea.DeliveryTag, false);
-                _logger.LogInformation("✅ NFe {NumeroNota} processada com sucesso", nfeMessage.NumeroNota);
+                _logger.LogInformation("NFe {NumeroNota} processada com sucesso", nfeMessage.NumeroNota);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "❌ Erro ao processar mensagem");
+                _logger.LogError(ex, "Erro ao processar mensagem");
                 await _channel.BasicNackAsync(ea.DeliveryTag, false, true);
             }
         };
@@ -112,7 +112,7 @@ public class NfeConsumerService : BackgroundService
             consumer: consumer,
             cancellationToken: stoppingToken);
 
-        _logger.LogInformation("🚀 NFe Consumer iniciado. Aguardando mensagens...");
+        _logger.LogInformation("NFe Consumer iniciado. Aguardando mensagens...");
 
         while (!stoppingToken.IsCancellationRequested)
         {
@@ -128,7 +128,7 @@ public class NfeConsumerService : BackgroundService
         var nfe = await nfeRepository.GetById(message.NfeId);
         if (nfe == null)
         {
-            _logger.LogWarning("⚠️ NFe não encontrada: {NfeId}", message.NfeId);
+            _logger.LogWarning("NFe não encontrada: {NfeId}", message.NfeId);
             return;
         }
 
@@ -161,7 +161,7 @@ public class NfeConsumerService : BackgroundService
             var motivo = motivosRejeicao[Random.Shared.Next(motivosRejeicao.Length)];
             nfe.Rejeitar($"Rejeição 999: {motivo}");
 
-            _logger.LogWarning("❌ NFe {NumeroNota} REJEITADA - Motivo: {Motivo}",
+            _logger.LogWarning("NFe {NumeroNota} REJEITADA - Motivo: {Motivo}",
                 message.NumeroNota, motivo);
         }
 

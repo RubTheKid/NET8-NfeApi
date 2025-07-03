@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using Nfe.Auth;
 using Nfe.Auth.Models;
+using Nfe.Auth.Repositories;
 using Nfe.Infrastructure.Data;
 
 namespace Nfe.Infrastructure.Repositories;

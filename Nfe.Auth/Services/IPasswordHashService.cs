@@ -1,4 +1,4 @@
-namespace Nfe.Auth;
+namespace Nfe.Auth.Services;
 
 public interface IPasswordHashService
 {
