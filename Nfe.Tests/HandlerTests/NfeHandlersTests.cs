@@ -1,8 +1,11 @@
 using Moq;
+using Nfe.Application.Features.NotaFiscal.Command.SendNfeToAuthorization;
 using Nfe.Application.Features.NotaFiscal.Query.GetNfeById;
 using Nfe.Application.Features.NotaFiscal.Query.GetNfeXml;
+using Nfe.Application.Services;
 using Nfe.Domain.Contracts.Repositories;
 using Nfe.Domain.Entities;
+using Nfe.Domain.Messages;
 using Nfe.Domain.ValueObjects;
 
 namespace Nfe.Tests.HandlerTests;
@@ -183,6 +186,301 @@ public class NfeHandlersTests
 
         // Assert
         result.Should().BeNull();
+    }
+
+    #endregion
+
+    #region SendNfeToAuthorization Tests
+
+    [Test]
+    public async Task SendNfeToAuthorization_ValidRequest_ShouldCreateNfeAndSendToProcessing()
+    {
+        // Arrange
+        var emitenteId = Guid.NewGuid();
+        var destinatarioId = Guid.NewGuid();
+        var produtoId = Guid.NewGuid();
+
+        var emitente = CreateClienteMock(emitenteId, "Empresa Emitente LTDA", "12345678000123");
+        var destinatario = CreateClienteMock(destinatarioId, "Cliente Destinatário LTDA", "98765432000198");
+
+        var request = new SendNfeToAuthorizationRequest
+        {
+            NumeroNota = "000000001",
+            Serie = "1",
+            EmitenteId = emitenteId,
+            DestinatarioId = destinatarioId,
+            Itens = new List<ItemNfeDto>
+            {
+                new ItemNfeDto
+                {
+                    ProdutoId = produtoId,
+                    Sequencia = 1,
+                    Quantidade = 2,
+                    ValorUnitario = 100.00m,
+                    Cfop = "5102",
+                    Cst = "00"
+                }
+            }
+        };
+
+        var nfeRepoMock = new Mock<INfeRepository>();
+        var clienteRepoMock = new Mock<IClienteRepository>();
+        var xmlServiceMock = new Mock<INfeXmlService>();
+        var messageServiceMock = new Mock<IMessageService>();
+
+        clienteRepoMock.Setup(r => r.GetById(emitenteId)).ReturnsAsync(emitente);
+        clienteRepoMock.Setup(r => r.GetById(destinatarioId)).ReturnsAsync(destinatario);
+        
+        nfeRepoMock.Setup(r => r.Add(It.IsAny<NotaFiscal>()))
+            .ReturnsAsync((NotaFiscal nfe) =>
+            {
+                SetPrivateProperty(nfe, "Id", Guid.NewGuid());
+                return nfe;
+            });
+
+        xmlServiceMock.Setup(s => s.ConvertToXmlAsync(It.IsAny<NotaFiscal>()))
+            .ReturnsAsync("<?xml version=\"1.0\" encoding=\"UTF-8\"?><nfeProc>...</nfeProc>");
+
+        messageServiceMock.Setup(s => s.SendNfeToProcessingAsync(It.IsAny<NfeAutorizacaoMessage>()))
+            .Returns(Task.CompletedTask);
+
+        var handler = new SendNfeToAuthorizationHandler(
+            nfeRepoMock.Object,
+            clienteRepoMock.Object,
+            xmlServiceMock.Object,
+            messageServiceMock.Object);
+
+        // Act
+        var result = await handler.Handle(request, CancellationToken.None);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Success.Should().BeTrue();
+        result.NfeId.Should().NotBe(Guid.Empty);
+        result.NumeroNota.Should().Be("000000001");
+        result.Serie.Should().Be("1");
+        result.Message.Should().Be("NFe criada e enviada para processamento com sucesso");
+
+        nfeRepoMock.Verify(r => r.Add(It.IsAny<NotaFiscal>()), Times.Once);
+        xmlServiceMock.Verify(s => s.ConvertToXmlAsync(It.IsAny<NotaFiscal>()), Times.Once);
+        messageServiceMock.Verify(s => s.SendNfeToProcessingAsync(It.IsAny<NfeAutorizacaoMessage>()), Times.Once);
+    }
+
+    [Test]
+    public async Task SendNfeToAuthorization_EmptyNumeroNota_ShouldReturnError()
+    {
+        // Arrange
+        var request = new SendNfeToAuthorizationRequest
+        {
+            NumeroNota = "",
+            Serie = "1",
+            EmitenteId = Guid.NewGuid(),
+            DestinatarioId = Guid.NewGuid(),
+            Itens = new List<ItemNfeDto> { new ItemNfeDto() }
+        };
+
+        var nfeRepoMock = new Mock<INfeRepository>();
+        var clienteRepoMock = new Mock<IClienteRepository>();
+        var xmlServiceMock = new Mock<INfeXmlService>();
+        var messageServiceMock = new Mock<IMessageService>();
+
+        var handler = new SendNfeToAuthorizationHandler(
+            nfeRepoMock.Object,
+            clienteRepoMock.Object,
+            xmlServiceMock.Object,
+            messageServiceMock.Object);
+
+        // Act
+        var result = await handler.Handle(request, CancellationToken.None);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Success.Should().BeFalse();
+        result.Message.Should().Be("Número da nota é obrigatório");
+    }
+
+    [Test]
+    public async Task SendNfeToAuthorization_EmptySerie_ShouldReturnError()
+    {
+        // Arrange
+        var request = new SendNfeToAuthorizationRequest
+        {
+            NumeroNota = "000000001",
+            Serie = "",
+            EmitenteId = Guid.NewGuid(),
+            DestinatarioId = Guid.NewGuid(),
+            Itens = new List<ItemNfeDto> { new ItemNfeDto() }
+        };
+
+        var nfeRepoMock = new Mock<INfeRepository>();
+        var clienteRepoMock = new Mock<IClienteRepository>();
+        var xmlServiceMock = new Mock<INfeXmlService>();
+        var messageServiceMock = new Mock<IMessageService>();
+
+        var handler = new SendNfeToAuthorizationHandler(
+            nfeRepoMock.Object,
+            clienteRepoMock.Object,
+            xmlServiceMock.Object,
+            messageServiceMock.Object);
+
+        // Act
+        var result = await handler.Handle(request, CancellationToken.None);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Success.Should().BeFalse();
+        result.Message.Should().Be("Série da nota é obrigatória");
+    }
+
+    [Test]
+    public async Task SendNfeToAuthorization_EmptyItens_ShouldReturnError()
+    {
+        // Arrange
+        var request = new SendNfeToAuthorizationRequest
+        {
+            NumeroNota = "000000001",
+            Serie = "1",
+            EmitenteId = Guid.NewGuid(),
+            DestinatarioId = Guid.NewGuid(),
+            Itens = new List<ItemNfeDto>()
+        };
+
+        var nfeRepoMock = new Mock<INfeRepository>();
+        var clienteRepoMock = new Mock<IClienteRepository>();
+        var xmlServiceMock = new Mock<INfeXmlService>();
+        var messageServiceMock = new Mock<IMessageService>();
+
+        var handler = new SendNfeToAuthorizationHandler(
+            nfeRepoMock.Object,
+            clienteRepoMock.Object,
+            xmlServiceMock.Object,
+            messageServiceMock.Object);
+
+        // Act
+        var result = await handler.Handle(request, CancellationToken.None);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Success.Should().BeFalse();
+        result.Message.Should().Be("A nota fiscal deve conter pelo menos um item");
+    }
+
+    [Test]
+    public async Task SendNfeToAuthorization_EmitenteNotFound_ShouldReturnError()
+    {
+        // Arrange
+        var request = new SendNfeToAuthorizationRequest
+        {
+            NumeroNota = "000000001",
+            Serie = "1",
+            EmitenteId = Guid.NewGuid(),
+            DestinatarioId = Guid.NewGuid(),
+            Itens = new List<ItemNfeDto> { new ItemNfeDto() }
+        };
+
+        var nfeRepoMock = new Mock<INfeRepository>();
+        var clienteRepoMock = new Mock<IClienteRepository>();
+        var xmlServiceMock = new Mock<INfeXmlService>();
+        var messageServiceMock = new Mock<IMessageService>();
+
+        clienteRepoMock.Setup(r => r.GetById(request.EmitenteId)).ReturnsAsync((Cliente)null);
+
+        var handler = new SendNfeToAuthorizationHandler(
+            nfeRepoMock.Object,
+            clienteRepoMock.Object,
+            xmlServiceMock.Object,
+            messageServiceMock.Object);
+
+        // Act
+        var result = await handler.Handle(request, CancellationToken.None);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Success.Should().BeFalse();
+        result.Message.Should().Be("Emitente não encontrado");
+    }
+
+    [Test]
+    public async Task SendNfeToAuthorization_DestinatarioNotFound_ShouldReturnError()
+    {
+        // Arrange
+        var request = new SendNfeToAuthorizationRequest
+        {
+            NumeroNota = "000000001",
+            Serie = "1",
+            EmitenteId = Guid.NewGuid(),
+            DestinatarioId = Guid.NewGuid(),
+            Itens = new List<ItemNfeDto> { new ItemNfeDto() }
+        };
+
+        var emitente = CreateClienteMock(request.EmitenteId, "Empresa Emitente LTDA", "12345678000123");
+
+        var nfeRepoMock = new Mock<INfeRepository>();
+        var clienteRepoMock = new Mock<IClienteRepository>();
+        var xmlServiceMock = new Mock<INfeXmlService>();
+        var messageServiceMock = new Mock<IMessageService>();
+
+        clienteRepoMock.Setup(r => r.GetById(request.EmitenteId)).ReturnsAsync(emitente);
+        clienteRepoMock.Setup(r => r.GetById(request.DestinatarioId)).ReturnsAsync((Cliente)null);
+
+        var handler = new SendNfeToAuthorizationHandler(
+            nfeRepoMock.Object,
+            clienteRepoMock.Object,
+            xmlServiceMock.Object,
+            messageServiceMock.Object);
+
+        // Act
+        var result = await handler.Handle(request, CancellationToken.None);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Success.Should().BeFalse();
+        result.Message.Should().Be("Destinatário não encontrado");
+    }
+
+    [Test]
+    public async Task SendNfeToAuthorization_ExceptionDuringProcessing_ShouldReturnError()
+    {
+        // Arrange
+        var emitenteId = Guid.NewGuid();
+        var destinatarioId = Guid.NewGuid();
+
+        var emitente = CreateClienteMock(emitenteId, "Empresa Emitente LTDA", "12345678000123");
+        var destinatario = CreateClienteMock(destinatarioId, "Cliente Destinatário LTDA", "98765432000198");
+
+        var request = new SendNfeToAuthorizationRequest
+        {
+            NumeroNota = "000000001",
+            Serie = "1",
+            EmitenteId = emitenteId,
+            DestinatarioId = destinatarioId,
+            Itens = new List<ItemNfeDto> { new ItemNfeDto() }
+        };
+
+        var nfeRepoMock = new Mock<INfeRepository>();
+        var clienteRepoMock = new Mock<IClienteRepository>();
+        var xmlServiceMock = new Mock<INfeXmlService>();
+        var messageServiceMock = new Mock<IMessageService>();
+
+        clienteRepoMock.Setup(r => r.GetById(emitenteId)).ReturnsAsync(emitente);
+        clienteRepoMock.Setup(r => r.GetById(destinatarioId)).ReturnsAsync(destinatario);
+        
+        nfeRepoMock.Setup(r => r.Add(It.IsAny<NotaFiscal>()))
+            .ThrowsAsync(new Exception("Erro de banco de dados"));
+
+        var handler = new SendNfeToAuthorizationHandler(
+            nfeRepoMock.Object,
+            clienteRepoMock.Object,
+            xmlServiceMock.Object,
+            messageServiceMock.Object);
+
+        // Act
+        var result = await handler.Handle(request, CancellationToken.None);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Success.Should().BeFalse();
+        result.Message.Should().Be("Erro ao processar NFe: Erro de banco de dados");
     }
 
     #endregion
