@@ -13,6 +13,23 @@ services:
     networks:
       - nfe-network
 
+  jenkins:
+    build:
+      context: ./jenkins
+      dockerfile: Dockerfile
+    container_name: nfe-jenkins
+    user: root
+    ports:
+      - "8081:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_data:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - JENKINS_OPTS=--httpPort=8080
+    networks:
+      - nfe-network
+
   rabbitmq:
     image: rabbitmq:3-management
     container_name: nfe-rabbitmq
@@ -32,6 +49,7 @@ services:
       timeout: 10s
       retries: 5
 
+
   api:
     build:
       context: .
@@ -47,14 +65,18 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - postgres
-      - rabbitmq
+      postgres:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
     networks:
       - nfe-network
+
 
 volumes:
   postgres_data:
   rabbitmq_data:
+  jenkins_data:
 
 networks:
   nfe-network:

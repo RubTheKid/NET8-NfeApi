@@ -8,6 +8,7 @@
 - **Entity Framework Core** - ORM
 - **MediatR** - CQRS Pattern
 - **Docker** - Containerização
+- **Jenkins** - CI/CD
 
 ## Arquitetura
 
@@ -50,6 +51,30 @@ dotnet run --project Nfe.Api
 - **Swagger UI**: https://localhost:7139/swagger
 - **API Base URL**: https://localhost:7139/api
 
+## Autenticação JWT
+
+A API utiliza autenticação JWT (JSON Web Token) para proteger os endpoints.
+
+### Usuário Administrador Padrão
+Quando a aplicação é executada pela primeira vez, um usuário administrador é criado automaticamente:
+
+- **Email:** `admin@nfe.com`
+- **Senha:** `Admin123!`
+
+### Como usar no Swagger
+
+1. Faça login no endpoint `/api/auth/login` com as credenciais acima
+2. Copie o token retornado no campo `token`
+3. Clique no botão "Authorize"
+4. Digite: `Bearer [SEU_TOKEN]` (exemplo: `Bearer eyJhbGciOiJIUzI1Ni...`)
+5. Clique "Authorize"
+
+#### OBS: Para ativar a autenticação, descomente o `[Authorize]` nos controllers e todos os endpoints para exigir o token JWT.
+
+
+### Endpoints de Autenticação
+- `POST /api/auth/register` - Registrar novo usuário
+- `POST /api/auth/login` - Fazer login e obter token JWT
 
 ## Endpoints
 
@@ -98,19 +123,3 @@ Exemplos de requisições disponíveis em `/ExemplosJson/`:
 - `nfe-basico.json` - NFe com um item
 - `nfe-multiplos-itens.json` - NFe com múltiplos itens
 - `nfe-diferentes-tributacoes.json` - NFe com diferentes CSTs
-
-## Modelo de Dados
-
-### Entidades
-
-- NotaFiscal
-- Cleinte
-- Produto
-- ItemNfe
-
-### Value Objects
-- CNPJ
-- Endereço
-- Email
-- Telefone
-- StatusNFe

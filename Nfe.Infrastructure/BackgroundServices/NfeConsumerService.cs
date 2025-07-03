@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -14,14 +15,16 @@ public class NfeConsumerService : BackgroundService
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<NfeConsumerService> _logger;
+    private readonly IConfiguration _configuration;
     private IConnection _connection;
     private IChannel _channel;
     private const string QueueName = "nfe-authorization-queue";
 
-    public NfeConsumerService(IServiceProvider serviceProvider, ILogger<NfeConsumerService> logger)
+    public NfeConsumerService(IServiceProvider serviceProvider, ILogger<NfeConsumerService> logger, IConfiguration configuration)
     {
         _serviceProvider = serviceProvider;
         _logger = logger;
+        _configuration = configuration;
         InitializeRabbitMQ();
     }
 
@@ -29,21 +32,48 @@ public class NfeConsumerService : BackgroundService
     {
         var factory = new ConnectionFactory()
         {
-            HostName = "localhost",
-            UserName = "rabbitmq",
-            Password = "rabbitmq",
-            Port = 5672
+            HostName = _configuration.GetValue<string>("RabbitMQ:Host") ?? "localhost",
+            UserName = _configuration.GetValue<string>("RabbitMQ:Username") ?? "rabbitmq",
+            Password = _configuration.GetValue<string>("RabbitMQ:Password") ?? "rabbitmq",
+            Port = _configuration.GetValue<int>("RabbitMQ:Port", 5672)
         };
 
-        _connection = factory.CreateConnectionAsync().GetAwaiter().GetResult();
-        _channel = _connection.CreateChannelAsync().GetAwaiter().GetResult();
+        var maxRetries = 10;
+        var currentRetry = 0;
 
-        _channel.QueueDeclareAsync(
-            queue: QueueName,
-            durable: true,
-            exclusive: false,
-            autoDelete: false,
-            arguments: null).GetAwaiter().GetResult();
+        while (currentRetry < maxRetries)
+        {
+            try
+            {
+                _logger.LogInformation($"🔄 Tentativa {currentRetry + 1}/{maxRetries} de conexão com RabbitMQ...");
+                
+                _connection = factory.CreateConnectionAsync().GetAwaiter().GetResult();
+                _channel = _connection.CreateChannelAsync().GetAwaiter().GetResult();
+
+                _channel.QueueDeclareAsync(
+                    queue: QueueName,
+                    durable: true,
+                    exclusive: false,
+                    autoDelete: false,
+                    arguments: null).GetAwaiter().GetResult();
+
+                _logger.LogInformation("✅ Conexão com RabbitMQ estabelecida com sucesso!");
+                return;
+            }
+            catch (Exception ex)
+            {
+                currentRetry++;
+                if (currentRetry >= maxRetries)
+                {
+                    _logger.LogError(ex, "❌ Falha ao conectar com RabbitMQ após {MaxRetries} tentativas", maxRetries);
+                    throw;
+                }
+
+                var delay = TimeSpan.FromSeconds(Math.Pow(2, currentRetry)); // Exponential backoff
+                _logger.LogWarning(ex, "⚠️ Falha na conexão com RabbitMQ. Tentando novamente em {Delay}s...", delay.TotalSeconds);
+                Task.Delay(delay).GetAwaiter().GetResult();
+            }
+        }
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
